@@ -1,51 +1,14 @@
-import { Observable } from 'rxjs';
+import { of, interval } from 'rxjs'; 
+import { fromFetch } from 'rxjs/fetch';
+import { map, switchMap, take } from 'rxjs/operators';
 
-// Eager vs Lazy
-console.clear();
 
-const promise = new Promise((resolve, reject) => {
-    console.log('Creating Promise');
-    resolve([1,2,3])
-});
+interval(100).pipe(
+  take(5), 
+  switchMap(val => {
+    return fromFetch("https://www.mocky.io/v2/5d8b0e90350000e104d46b9b?mocky-delay=1000ms")
+  })
+).subscribe(console.log);
 
-const observable = new Observable(observer => {
-    console.log('Creating Observable');
-    observer.next([4,5,6]);
-});
-
-// if you don't subscribe the observable doesn't get created
-// the promise is eager so it fires when it is created
-//promise.then(result => console.log(result));
-//observable.subscribe(result => console.log(result));
-
-/*
-Creating Promise
-Creating Observable
-[ 4, 5, 6 ]
-Creating Observable
-[ 4, 5, 6 ]        
-Creating Observable
-[ 4, 5, 6 ]    
-*/
-
-//promise.then(result => console.log(result));
-
-// promise.then(
-//     result => {
-//         console.log(result);
-//     },
-//         err => console.log(err)
-// );
-
-//observable.subscribe(result => console.log(result));
-
-// observable.subscribe(
-//     result => {
-//         console.log(result);
-//     },
-//         err => console.log(err)
-// );
-
-setTimeout(() => {
-    observable.subscribe(result => console.log(result));
-}, 2000);
+// https://stackblitz.com/edit/obsworkshop-cancellation?file=index.ts
+// interval(1000).subscribe(console.log)
