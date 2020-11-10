@@ -1,14 +1,36 @@
-import { of, interval } from 'rxjs'; 
-import { fromFetch } from 'rxjs/fetch';
-import { map, switchMap, take } from 'rxjs/operators';
+import { Observable,  } from 'rxjs'; 
+import { share } from 'rxjs/operators';
+
+console.clear();
+
+// in FileA
+const o = new Observable(observer => {
+    console.log("About to do http");
+    // pretend we did http
+    setTimeout(() => {
+        console.log("Did http");
+        observer.next([5,6,7]);    
+    }, 1000);
+    
+}); // .pipe(share())
+// share() will make this only create the observable once
+
+// in FileB
+// this create a new observable that is shared, but does not modify the original observable o
+// can only mutated can't modify
+// since the new observable is shared it will only be created once
+const myObs = o.pipe(share());
+
+myObs.subscribe(console.log);
+myObs.subscribe(console.log);
+myObs.subscribe(console.log);
 
 
-interval(100).pipe(
-  take(5), 
-  switchMap(val => {
-    return fromFetch("https://www.mocky.io/v2/5d8b0e90350000e104d46b9b?mocky-delay=1000ms")
-  })
-).subscribe(console.log);
+// in FileC 
+// subscribe to the FileA observable that is not shared, will create the observable with each subscription 
+o.subscribe(console.log);
+o.subscribe(console.log);
+o.subscribe(console.log);
 
-// https://stackblitz.com/edit/obsworkshop-cancellation?file=index.ts
-// interval(1000).subscribe(console.log)
+
+
