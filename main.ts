@@ -3,26 +3,16 @@ import { take } from 'rxjs/operators';
 
 console.clear();
 
-const o = new Observable(observer => {
-    observer.next([4,5,6]);    
-    observer.complete();    // when you call complete all subscription call unsubscribe on themselves
-}); 
+// The difference is where you manage the observable from, Author completes, Consumer unsubscribes
 
-let result: Subscription = o.subscribe(
-    val => console.log(val), // next callback
-    err => console.error(err), // error callback
-    () => console.log('Observable complete') // complete callback
+// in FileA, API Author
+// Author manages the observable with take
+const obs = interval(1000).pipe(take(5));
+
+// in FileB, consumer
+// Consumer manages the observable by storing the subscription and calling unsubscribe
+const sub2 = obs.subscribe(console.log, console.log, () => 
+    console.log("complete")
 );
 
-result.unsubscribe();   
-
-// using take to complete the observable subscription after 5 intervals
-const sub = interval(1000)
-    .pipe(take(5))
-    .subscribe(console.log, console.log, () => console.log("sub complete"));
-
-const sub2 = interval(1000)
-    .subscribe(console.log, console.log, () => console.log("sub2 complete"));
-
-// if we unsubscribe we have not completed the observable
-setTimeout(() => sub2.unsubscribe(), 3000);
+setTimeout(() => sub2.unsubscribe(), 6000);
