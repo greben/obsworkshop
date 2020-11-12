@@ -136,3 +136,16 @@ userPage$.subscribe(page => {
        }
     );
  })
+
+
+prevPageClick$.subscribe(() => {
+    // get the current value of page BehaviorSubject, only BehaviorSubject have this method because you have to set a default value
+    // you can't put new data in a Observable
+    const currentPage = page$.getValue();   
+    page$.next(currentPage - 1);
+});
+
+nextPageClick$.subscribe(() => {
+    const currentPage = page$.getValue();
+    page$.next(currentPage + 1);
+})
